@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Objetos</title>
+  <title>My Library</title>
   <link rel="stylesheet" href="./sytle.css">
 </head>
 <body>
@@ -15,13 +15,13 @@
   <div class="newBookModal modal">
     <form class="newBookForm" >
       <label id="bookTitle">
-        <input class='bookData' class="" type="text" name="bookTitle" placeholder="Book Title">
+        <input class='bookData' class="" type="text" name="bookTitle" placeholder="Book Title" >
       </label>
       <label id="bookAuthor">
-        <input class='bookData' type="text" name="bookAuthor" placeholder="Book Author">
+        <input required class='bookData' type="text" name="bookAuthor" placeholder="Book Author">
       </label>
       <label id="bookPages">
-        <input class='bookData' type="number" name="bookPages" placeholder="Book Pages">
+        <input required class='bookData' type="number" name="bookPages" placeholder="Book Pages">
       </label>
       <label id="wasRead">
         <select class='bookData readed' name="wasRead" >
@@ -35,13 +35,13 @@
   <div class="editBookModal modal">
     <form class="editBookForm">
       <label id="editBookTitle">
-        <input class='bookData' class="" type="text" name="editBookTitle" >
+        <input required class='bookData' class="" type="text" name="editBookTitle" >
       </label>
       <label id="editBookAuthor">
-        <input class='bookData' type="text" name="editBookAuthor">
+        <input required class='bookData' type="text" name="editBookAuthor">
       </label>
       <label id="editBookPages">
-        <input class='bookData' type="number" name="editBookPages" >
+        <input required class='bookData' type="number" name="editBookPages" >
       </label>
       <label id="editWasRead">
         <select class='bookData readed' name="editWasRead" >
@@ -54,13 +54,13 @@
   </div>
   <table id="bookTable">
     <tr class="tableHeader">
-      <th colspan="5">Books List</th>
+      <th colspan="5">BOOKS LIST</th>
     </tr>
     <tr class="tableHeader">
-      <th>Title</th>
-      <th class="tableAuthor">Author</th>
-      <th>Pages</th>
-      <th>Readed</th>
+      <th>TITLE</th>
+      <th class="tableAuthor">AUTHOR</th>
+      <th>PAGES</th>
+      <th>READED</th>
       <th>Edit/Delete</th>
     </tr>
   </table>

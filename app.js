@@ -7,8 +7,7 @@ function Book(title, author, pages, readed, id) {
   this.id = id
 }
 let setId = startId()
-let bookToEditId
-// let myLibrary = []
+let bookToEditId // a global varbiable
 let myLibrary = [
   {
     title:'title1',
