@@ -16,7 +16,7 @@ h1{
   display: none;
 }
 
-.addBtn {
+.showAddBookModal {
   display: block;
   background-color: rgb(208, 245, 133);
   margin: 10px auto;

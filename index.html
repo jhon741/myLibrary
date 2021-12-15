@@ -8,14 +8,16 @@
   <link rel="stylesheet" href="./sytle.css">
 </head>
 <body>
+  <div class="appContainer">
+
   <h1>MY LIBRARY</h1>
-  <button class="addBtn">
+  <button class="showAddBookModal">
     add new book
   </button>
   <div class="newBookModal modal">
     <form class="newBookForm" >
       <label id="bookTitle">
-        <input class='bookData' class="" type="text" name="bookTitle" placeholder="Book Title" >
+        <input required class='bookData' class="" type="text" name="bookTitle" placeholder="Book Title" >
       </label>
       <label id="bookAuthor">
         <input required class='bookData' type="text" name="bookAuthor" placeholder="Book Author">
@@ -52,18 +54,24 @@
       <input type="submit" value="save changes" name="submit">
     </form>
   </div>
-  <table id="bookTable">
-    <tr class="tableHeader">
-      <th colspan="5">BOOKS LIST</th>
-    </tr>
-    <tr class="tableHeader">
-      <th>TITLE</th>
-      <th class="tableAuthor">AUTHOR</th>
-      <th>PAGES</th>
-      <th>READED</th>
-      <th>Edit/Delete</th>
-    </tr>
+  <table >
+    <tbody id="bookTable">
+      <tr class="tableHeader">
+        <th colspan="5">BOOKS LIST</th>
+      </tr>
+      <tr class="tableHeader">
+        <th>TITLE</th>
+        <th class="tableAuthor">AUTHOR</th>
+        <th>PAGES</th>
+        <th>READED</th>
+        <th>Edit/Delete</th>
+      </tr>
+    </tbody>
   </table>
+</div>
+  <script src="Book.js"></script>
+  <script src="Forms.js"></script>
+  <script src="Table.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

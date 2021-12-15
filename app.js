@@ -1,225 +1,119 @@
-// initialize neccessary variables 
-function Book(title, author, pages, readed, id) {
-  this.title = title
-  this.author = author
-  this.pages = pages
-  this.readed = readed
-  this.id = id
-}
-let setId = startId()
-let bookToEditId // a global varbiable
-let myLibrary = [
-  {
-    title:'title1',
-    author: 'author1',
-    pages: 123,
-    readed: 'yes',
-    id: setId(),
-  },
-  {
-    title:'title2',
-    author: 'author2',
-    pages: 321,
-    readed: 'no',
-    id: setId(),
-  },
-  {
-    title:'title3',
-    author: 'author3',
-    pages: 456,
-    readed: 'yes',
-    id: setId(),
+let library = (() => {
+  let bookIdToBeEdited
+    // initialize variables
+  let newForm = new Form(document.querySelector('.newBookForm'))
+  let editForm = new Form(document.querySelector('.editBookForm'))
+  let table = new Table(document.getElementById('bookTable'))
+  let appContainer = document.querySelector('.appContainer')
+  let showAddBookModalBtn = appContainer.querySelector('.showAddBookModal')
+  let addBookModal = appContainer.querySelector('.newBookModal')
+  let saveBook = addBookModal.querySelector('input[type="submit"]')
+  let editBookModal = appContainer.querySelector('.editBookModal')
+  let saveEdit = editBookModal.querySelector('input[type="submit"]')
+
+  // some starting data
+  let b1 = new Book('title1', 'author1', 123, 'yes')
+  let b2 = new Book('title2', 'author2', 123, 'no')
+  let b3 = new Book('title3', 'author3', 123, 'yes')
+  let b4 = new Book('Harry Potter','JK Rowling',125,'yes')
+  let b5 = new Book('The Hobbit','Anonymous',164,'no')
+  let myLibrary = [b1,b2,b3,b4,b5]
+  Table.updateTable(table.tableElement, myLibrary)
+
+  // bind events
+  saveEdit.addEventListener('click', saveChanges)
+  table.tableElement.addEventListener('click', doAction)
+  showAddBookModalBtn.addEventListener('click', showModal)
+  addBookModal.addEventListener('click', hideModal)
+  editBookModal.addEventListener('click', hideModal)
+  saveBook.addEventListener('click', addNewBook)
+
+  //functions
+
+  function saveChanges(e) {
+    e.preventDefault()
+    let newValues = Form.getFormValues(editForm.formElement)
+    let bookToEdit = myLibrary.find(book => book.id == bookIdToBeEdited ) 
+    bookToEdit.title = newValues[0]
+    bookToEdit.author = newValues[1]
+    bookToEdit.pages = newValues[2]
+    bookToEdit.readed = newValues[3]
+    editBookModal.style.display = 'none'
+    Table.updateRowInfo(table.tableElement, bookIdToBeEdited, newValues)
+    console.table(myLibrary)
   }
-]
 
-// get the neccesary elements
-let addBtn = document.querySelector('.addBtn')
-let newBookModal = document.querySelector('.newBookModal')
-let editBookModal = document.querySelector('.editBookModal')
-let saveNewBookBtn = newBookModal.querySelector('input[type="submit"]')
-let saveChangesBtn = editBookModal.querySelector('input[type="submit"]')
-let table = document.querySelector('tbody')
+  function addNewBook(e) {
+    e.preventDefault()
+    let values = Form.getFormValues(newForm.formElement)
+    myLibrary.push(new Book(values[0], values[1], values[2], values[3]))
+    addBookModal.style.display = 'none'
+    Table.addRow(table.tableElement, myLibrary[myLibrary.length -1])
+    Form.cleanFormValues(newForm.formElement)
+    console.table(myLibrary)
+  }
 
-// initial state
-updateTable(table, myLibrary)
-// bind an event to new add new book button
-addBtn.addEventListener('click', displayAddBookForm)
-// bind event to hide modals
-newBookModal.addEventListener('click', hideModal)
-editBookModal.addEventListener('click', hideModal)
-// bind event to save book
-saveNewBookBtn.addEventListener('click', saveBook)
-// bind event to delete item
-table.addEventListener('click', doAction)
-// to toggle value
-table.addEventListener('click', toggleReadValue)
-// bind event to save changes
-saveChangesBtn.addEventListener('click', saveChanges)
-
-// declare the functions
-
-// to display add new item form
-function displayAddBookForm(e) {
-  newBookModal.style.display = 'block'
-}
-
-// to hide the modals
-function hideModal(e) {
-  if(e == newBookModal || e == editBookModal) {
-    e.style.display = 'none'
-  }else {
-    let modal = e.target
-    if(modal.classList.contains('modal')) {
-      modal.style.display = 'none'
+  function doAction(e) {
+    let rowId
+    let targ = e.target
+    if(targ.classList.contains('editBtn')) {
+      rowId = +targ.parentNode.parentNode.getAttribute('id')
+      showEditFormWithInfo(e, rowId)
+    }else if(targ.classList.contains('readedField')) {
+      rowId = +targ.parentNode.getAttribute('id')
+      toggleReadStatus(e, rowId)
+    } else if(targ.classList.contains('delBtn')) {
+      rowId = +targ.parentNode.parentNode.getAttribute('id')
+      deleteRow(e, rowId)
     }
   }
-}
 
-// to add a book to the library list
-function saveBook(e) {
-  e.preventDefault()
-  // get all the book data
-  let newBookData = [...newBookModal.querySelectorAll('.bookData')].map(item => item.value)
-  // create a book element with the new data and save it in myLibrary array
-  myLibrary.push(new Book(newBookData[0], newBookData[1], newBookData[2], newBookData[3], setId()))
-  // set the form values to empty values
-  newBookModal.querySelectorAll('.bookData').forEach(data => {
-    console.log(data.classList.contains('bookData'));
-    if(data.classList.contains('readed')) {
-      data.value = 'no'
-    } else {
-      data.value = ''
-    }
-  })
-  // hide the modal
-  hideModal(newBookModal)
-  updateTable(table, myLibrary)
-}
-
-// to crate a new row for the table
-function createRow(bookInfo) {
-  let row = document.createElement('tr')
-  row.setAttribute('id', bookInfo.id)
-  let title = document.createElement('td')
-  title.textContent = bookInfo.title
-  let author = document.createElement('td')
-  author.textContent = bookInfo.author
-  let pages = document.createElement('td')
-  pages.textContent = bookInfo.pages
-  let readed = document.createElement('td')
-  readed.classList.add('readedField')
-  if(bookInfo.readed == 'yes') {
-    readed.classList.add('tRead')
-  }
-  readed.textContent = bookInfo.readed
-  let actions = document.createElement('td')
-  let delBtn = document.createElement('button')
-  delBtn.textContent = 'delete'
-  delBtn.classList.add('delBtn')
-  let editBtn = document.createElement('button')
-  editBtn.textContent = 'edit'
-  editBtn.classList.add('editBtn')
-  actions.appendChild(delBtn)
-  actions.appendChild(editBtn)
-
-  row.appendChild(title)
-  row.appendChild(author)
-  row.appendChild(pages)
-  row.appendChild(readed)
-  row.appendChild(actions)
-  
-  return row
-}
-// to clean table
-function cleanTable(table) {
-  table.querySelectorAll('tr').forEach(row => {
-    if(!row.classList.contains('tableHeader')) {
-      table.removeChild(row)
-    }
-  })
-}
-// to update table
-function updateTable(table, library) {
-  cleanTable(table)
-  library.forEach(book => {
-    let row = createRow(book)
-    table.appendChild(row)
-  })
-}
-
-// to do an action o the table's rows
-function doAction(e) {
-  let action = e.target.classList.contains('delBtn') ? 'delete' :
-  e.target.classList.contains('editBtn') ? 'edit' : 'neither of the buttons was clicked'
-  if(action=='delete') {
-    let itemId = e.target.parentNode.parentNode.getAttribute('id')
-    table.removeChild(e.target.parentNode.parentNode)
-    let itemIndex = myLibrary.findIndex(item => item.id == itemId)
-    myLibrary.splice(itemIndex, 1)
-
-  } else if(action=='edit') {
-    let itemId = +e.target.parentNode.parentNode.getAttribute('id')
-    console.log(itemId);
-    let itemToEdit = myLibrary.find(item => item.id == itemId)
-    console.log(itemToEdit);
-    // fill the form with the specific info
-    let formEntries = editBookModal.querySelectorAll('.bookData')
-    console.log(formEntries);
-    formEntries.forEach(entry => {
-      switch (entry.name){
-        case 'editBookTitle':
-          entry.value = itemToEdit.title
-          break
-        case 'editBookAuthor':
-          entry.value = itemToEdit.author
-          break
-        case 'editBookPages':
-          entry.value = itemToEdit.pages
-          break
-        case 'editWasRead':
-          entry.value = itemToEdit.readed
-          break
+  function toggleReadStatus(e, rowId) {
+    e.target.textContent = e.target.textContent == 'yes' ? 'no' : 'yes';
+    e.target.classList.toggle('tRead')
+    myLibrary.forEach(book => {
+      if(book.id == rowId) {
+        book.readed = e.target.textContent
       }
     })
+    console.table(myLibrary)
+  } 
+
+  function deleteRow(e, rowId) {
+    if(confirm('are you sure?')) {
+      let index
+      index = [...table.tableElement.children].findIndex(el => {
+        return +el.getAttribute('id') == rowId
+      })
+      Table.deleteRow(table.tableElement, index)
+      index = myLibrary.findIndex(el => {
+        return el.id == rowId
+      })
+      myLibrary.splice(index, 1 )
+      console.table(myLibrary)
+    }
+  } 
+
+  function showEditFormWithInfo(e, rowId) {
+    bookIdToBeEdited = rowId
     editBookModal.style.display = 'block'
-    bookToEditId = itemId
+    let values = myLibrary.find(el => el.id == rowId)
+    Form.fillFormValues(editForm.formElement, values)
+    console.log(`the id of the row is ${rowId}`);
   }
-}
 
-// to save changes
-function saveChanges(e) {
-  e.preventDefault()
-  let newInfo = [...editBookModal.querySelectorAll('.bookData')].map(item => item.value )
-  // add the new info into a new Book object but with the same ID
-  let newBook = new Book(newInfo[0], newInfo[1], newInfo[2], newInfo[3], bookToEditId)
-
-  // remove item from book list
-  let itemIndex = myLibrary.findIndex(item => item.id == bookToEditId)
-  myLibrary.splice(itemIndex, 1, newBook)
-  updateTable(table, myLibrary)
-  hideModal(editBookModal)
-}
-
-// closure to create id
-function startId() {
-  let id = -1
-  function updateId() {
-    id++
-    return id
-  }
-  return updateId
-}
-
-function toggleReadValue(e) {
-  if (e.target.classList.contains('readedField')) {
-    e.target.classList.toggle('tRead')
-    let rowId = e.target.parentNode.getAttribute('id')
-    if(e.target.classList.contains('tRead')) {
-      e.target.textContent = 'yes'
-      myLibrary.find(item => item.id == rowId).readed = 'yes'
-    } else {
-      e.target.textContent = 'no'
-      myLibrary.find(item => item.id == rowId).readed = 'no'
+  function hideModal(e) {
+    if(e.target.classList.contains('newBookModal')) {
+      e.target.style.display = 'none'
+      Form.cleanFormValues(newForm.formElement)
+    } else if(e.target.classList.contains('editBookModal')) {
+      e.target.style.display = 'none'
+      Form.cleanFormValues(editForm.formElement)
     }
   }
-}
+
+  function showModal(e) {
+    addBookModal.style.display = 'block'; 
+  }
+
+})()
